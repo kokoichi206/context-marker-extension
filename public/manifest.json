@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Context Marker",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Environment marker for dev/stg/prod - works with SPA and non-URL switches",
   "permissions": ["storage"],
   "background": {
