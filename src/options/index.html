@@ -4,9 +4,201 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Context Marker Settings</title>
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: system-ui, -apple-system, sans-serif; background: #f5f5f5; color: #333; padding: 24px; max-width: 960px; margin: 0 auto; }
+      h1 { font-size: 24px; margin-bottom: 16px; }
+
+      .toolbar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+      .toolbar button { padding: 8px 16px; border: 1px solid #ccc; border-radius: 6px; background: #fff; cursor: pointer; font-size: 14px; }
+      .toolbar button:hover { background: #e8e8e8; }
+      .toolbar button.primary { background: #2563eb; color: #fff; border-color: #2563eb; }
+      .toolbar button.primary:hover { background: #1d4ed8; }
+
+      #import-file { display: none; }
+
+      .rule-card { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 12px; }
+      .rule-card.disabled { opacity: 0.5; }
+      .rule-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+      .rule-header .color-dot { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; }
+      .rule-header .rule-name { font-weight: 600; font-size: 16px; flex: 1; }
+      .rule-header .rule-priority { font-size: 12px; color: #888; }
+      .rule-meta { font-size: 13px; color: #666; margin-bottom: 8px; }
+      .rule-actions { display: flex; gap: 8px; }
+      .rule-actions button { padding: 4px 12px; font-size: 13px; border: 1px solid #ccc; border-radius: 4px; background: #fff; cursor: pointer; }
+      .rule-actions button:hover { background: #f0f0f0; }
+      .rule-actions button.danger { color: #dc2626; border-color: #dc2626; }
+      .rule-actions button.danger:hover { background: #fef2f2; }
+
+      .empty { text-align: center; padding: 48px; color: #999; font-size: 15px; }
+
+      dialog { border: 1px solid #ddd; border-radius: 12px; padding: 24px; max-width: 720px; width: 100%; }
+      dialog::backdrop { background: rgba(0,0,0,0.3); }
+      .dialog-title { font-size: 20px; font-weight: 600; margin-bottom: 16px; }
+
+      .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .form-group { display: flex; flex-direction: column; gap: 4px; }
+      .form-group.full { grid-column: 1 / -1; }
+      .form-group label { font-size: 13px; font-weight: 600; color: #555; }
+      .form-group input, .form-group select, .form-group textarea { padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; font-family: inherit; }
+      .form-group textarea { font-family: 'SF Mono', Monaco, Consolas, monospace; font-size: 13px; resize: vertical; }
+      .form-group input[type="checkbox"] { width: auto; align-self: start; margin-top: 4px; }
+
+      .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+      .dialog-actions button { padding: 8px 20px; border: 1px solid #ccc; border-radius: 6px; cursor: pointer; font-size: 14px; }
+      .dialog-actions .save { background: #2563eb; color: #fff; border-color: #2563eb; }
+
+      .toast { position: fixed; bottom: 24px; right: 24px; padding: 12px 20px; background: #333; color: #fff; border-radius: 8px; font-size: 14px; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+      .toast.show { opacity: 1; }
+
+      .section-title { font-size: 14px; font-weight: 600; color: #555; margin: 12px 0 4px; grid-column: 1 / -1; border-top: 1px solid #eee; padding-top: 12px; }
+
+      .style-picker { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+      .style-picker h2 { font-size: 15px; margin-bottom: 12px; }
+      .style-options { display: flex; gap: 12px; }
+      .style-option { flex: 1; border: 2px solid #ddd; border-radius: 8px; padding: 12px; cursor: pointer; text-align: center; transition: border-color 0.15s; }
+      .style-option:hover { border-color: #93b5f6; }
+      .style-option.active { border-color: #2563eb; background: #eff6ff; }
+      .style-option .style-name { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+      .style-option .style-desc { font-size: 12px; color: #666; }
+      .style-preview { height: 48px; margin-bottom: 8px; background: #f8f8f8; border-radius: 4px; position: relative; overflow: hidden; }
+      .style-preview .sp-header { height: 12px; background: #232f3e; }
+      .style-preview .sp-bar { height: 8px; background: #ff3b30; }
+      .style-preview .sp-border { position: absolute; inset: 0; border: 2px solid #ff3b30; }
+      .style-preview .sp-tint { position: absolute; inset: 0; background: rgba(255,59,48,0.07); }
+      .style-preview .sp-ribbon { position: absolute; top: 4px; right: -14px; background: #ff3b30; color: #fff; font: bold 6px system-ui; padding: 2px 16px; transform: rotate(45deg); }
+    </style>
   </head>
   <body>
     <h1>Context Marker Settings</h1>
+
+    <div class="style-picker">
+      <h2>Display Style</h2>
+      <div class="style-options">
+        <div class="style-option" data-style="topBar">
+          <div class="style-preview">
+            <div class="sp-bar"></div>
+            <div class="sp-header"></div>
+          </div>
+          <div class="style-name">Top Bar</div>
+          <div class="style-desc">Full-width bar at the top</div>
+        </div>
+        <div class="style-option" data-style="ribbon">
+          <div class="style-preview">
+            <div class="sp-header"></div>
+            <div class="sp-ribbon">PROD</div>
+          </div>
+          <div class="style-name">Ribbon</div>
+          <div class="style-desc">Diagonal corner ribbon</div>
+        </div>
+        <div class="style-option" data-style="combo">
+          <div class="style-preview">
+            <div class="sp-border"></div>
+            <div class="sp-tint"></div>
+            <div class="sp-bar"></div>
+            <div class="sp-header"></div>
+          </div>
+          <div class="style-name">Combo</div>
+          <div class="style-desc">Border + bar + tint</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <button class="primary" id="add-rule">+ Add Rule</button>
+      <button id="import-btn">Import JSON</button>
+      <button id="export-btn">Export JSON</button>
+      <input type="file" id="import-file" accept=".json" />
+    </div>
+
+    <div id="rules-list"></div>
+
+    <dialog id="rule-dialog">
+      <div class="dialog-title" id="dialog-title">Add Rule</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="f-name">Name</label>
+          <input type="text" id="f-name" placeholder="e.g. AWS PROD" />
+        </div>
+        <div class="form-group">
+          <label for="f-priority">Priority</label>
+          <input type="number" id="f-priority" value="100" />
+        </div>
+        <div class="form-group">
+          <label for="f-enabled">
+            <input type="checkbox" id="f-enabled" checked /> Enabled
+          </label>
+        </div>
+
+        <div class="section-title">Target</div>
+        <div class="form-group">
+          <label for="f-host">Host (comma-separated)</label>
+          <input type="text" id="f-host" placeholder="e.g. console.aws.amazon.com" />
+        </div>
+        <div class="form-group">
+          <label for="f-url-pattern">URL Pattern</label>
+          <input type="text" id="f-url-pattern" placeholder="e.g. https://console.aws.amazon.com/*" />
+        </div>
+
+        <div class="section-title">Detection</div>
+        <div class="form-group">
+          <label for="f-mode">Mode</label>
+          <select id="f-mode">
+            <option value="urlOnly">urlOnly</option>
+            <option value="signals">signals</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label for="f-extractors">Extractors (JSON array)</label>
+          <textarea id="f-extractors" rows="4" placeholder='[{"type":"domTextRegex","key":"identity.accountId","pattern":"\\b\\d{12}\\b","scope":"header"}]'></textarea>
+        </div>
+        <div class="form-group full">
+          <label for="f-match">Match conditions (JSON array)</label>
+          <textarea id="f-match" rows="3" placeholder='[{"op":"eq","key":"identity.accountId","value":"123456789012"}]'></textarea>
+        </div>
+
+        <div class="section-title">Display</div>
+        <div class="form-group">
+          <label for="f-label">Label Template</label>
+          <input type="text" id="f-label" placeholder="e.g. PROD {{identity.accountId}}" />
+        </div>
+        <div class="form-group">
+          <label for="f-color">Color</label>
+          <input type="color" id="f-color" value="#ff3b30" />
+        </div>
+        <div class="form-group">
+          <label for="f-position">Position</label>
+          <select id="f-position">
+            <option value="topRight">Top Right</option>
+            <option value="topLeft">Top Left</option>
+            <option value="bottomRight">Bottom Right</option>
+            <option value="bottomLeft">Bottom Left</option>
+            <option value="headerBar">Header Bar</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="f-opacity">Opacity</label>
+          <input type="number" id="f-opacity" min="0" max="1" step="0.05" value="0.9" />
+        </div>
+        <div class="form-group">
+          <label for="f-tint">
+            <input type="checkbox" id="f-tint" /> Tint Page
+          </label>
+        </div>
+        <div class="form-group">
+          <label for="f-title-prefix">Title Prefix</label>
+          <input type="text" id="f-title-prefix" placeholder="e.g. [PROD] " />
+        </div>
+      </div>
+
+      <div class="dialog-actions">
+        <button id="dialog-cancel">Cancel</button>
+        <button class="save" id="dialog-save">Save</button>
+      </div>
+    </dialog>
+
+    <div class="toast" id="toast"></div>
+
     <script type="module" src="./main.ts"></script>
   </body>
 </html>
