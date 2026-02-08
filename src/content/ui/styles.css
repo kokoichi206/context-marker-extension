@@ -1,0 +1,14 @@
+:host {
+  all: initial;
+}
+
+.context-marker-overlay {
+  position: fixed;
+  z-index: 2147483647;
+  pointer-events: none;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: #fff;
+}
