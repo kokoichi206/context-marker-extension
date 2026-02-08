@@ -1,0 +1,48 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify version consistency
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          PKG=$(jq -r .version package.json)
+          MANIFEST=$(jq -r .version public/manifest.json)
+          echo "tag=$TAG package.json=$PKG manifest.json=$MANIFEST"
+          if [ "$TAG" != "$PKG" ] || [ "$TAG" != "$MANIFEST" ]; then
+            echo "::error::Version mismatch: tag=v$TAG package.json=$PKG manifest.json=$MANIFEST"
+            exit 1
+          fi
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm test
+
+      - run: pnpm build
+
+      - name: Create zip
+        run: cd dist && zip -r ../context-marker-${{ github.ref_name }}.zip .
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: context-marker-${{ github.ref_name }}.zip
