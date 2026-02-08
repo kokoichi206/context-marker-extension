@@ -2,6 +2,7 @@
   "name": "context-marker-extension",
   "version": "0.0.1",
   "private": true,
+  "packageManager": "pnpm@10.26.2",
   "type": "module",
   "scripts": {
     "clean": "rm -rf dist",
