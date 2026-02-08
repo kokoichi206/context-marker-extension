@@ -52,7 +52,7 @@ export const ruleSchema = z.object({
   }),
   display: z.object({
     labelTemplate: z.string(),
-    color: z.string(),
+    color: z.string().regex(/^#[0-9a-fA-F]{3,8}$/),
     position: z.enum([
       "topLeft",
       "topRight",
