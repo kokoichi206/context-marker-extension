@@ -1,4 +1,4 @@
-name: Release
+name: release
 
 on:
   push:
@@ -13,6 +13,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Verify version consistency
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          PKG=$(jq -r .version package.json)
+          MANIFEST=$(jq -r .version public/manifest.json)
+          echo "tag=$TAG package.json=$PKG manifest.json=$MANIFEST"
+          if [ "$TAG" != "$PKG" ] || [ "$TAG" != "$MANIFEST" ]; then
+            echo "::error::Version mismatch: tag=v$TAG package.json=$PKG manifest.json=$MANIFEST"
+            exit 1
+          fi
 
       - uses: pnpm/action-setup@v4
 
