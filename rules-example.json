@@ -1,0 +1,106 @@
+[
+  {
+    "id": "aws-prod",
+    "name": "AWS PROD (092399857275)",
+    "enabled": true,
+    "priority": 100,
+    "target": {
+      "host": "console.aws.amazon.com"
+    },
+    "detection": {
+      "mode": "signals",
+      "extractors": [
+        {
+          "type": "domTextRegex",
+          "key": "identity.accountId",
+          "pattern": "(\\d{4}-\\d{4}-\\d{4})",
+          "scope": "header"
+        }
+      ],
+      "match": [
+        { "op": "eq", "key": "identity.accountId", "value": "0923-9985-7275" }
+      ]
+    },
+    "display": {
+      "labelTemplate": "PROD {{identity.accountId}}",
+      "color": "#ff3b30",
+      "position": "topRight",
+      "opacity": 0.95,
+      "extras": {
+        "tintPage": true,
+        "titlePrefix": "[PROD] "
+      }
+    }
+  },
+  {
+    "id": "aws-dev",
+    "name": "AWS DEV (774157348320)",
+    "enabled": true,
+    "priority": 90,
+    "target": {
+      "host": "console.aws.amazon.com"
+    },
+    "detection": {
+      "mode": "signals",
+      "extractors": [
+        {
+          "type": "domTextRegex",
+          "key": "identity.accountId",
+          "pattern": "(\\d{4}-\\d{4}-\\d{4})",
+          "scope": "header"
+        }
+      ],
+      "match": [
+        { "op": "eq", "key": "identity.accountId", "value": "7741-5734-8320" }
+      ]
+    },
+    "display": {
+      "labelTemplate": "DEV {{identity.accountId}}",
+      "color": "#34c759",
+      "position": "topRight",
+      "opacity": 0.9
+    }
+  },
+  {
+    "id": "supabase-prod",
+    "name": "Supabase PROD (dofllqmyvsgpnfbntksu)",
+    "enabled": true,
+    "priority": 100,
+    "target": {
+      "host": "supabase.com",
+      "urlPattern": "https://supabase.com/dashboard/project/dofllqmyvsgpnfbntksu*"
+    },
+    "detection": {
+      "mode": "urlOnly"
+    },
+    "display": {
+      "labelTemplate": "PROD Supabase",
+      "color": "#ff3b30",
+      "position": "topRight",
+      "opacity": 0.95,
+      "extras": {
+        "tintPage": true,
+        "titlePrefix": "[PROD] "
+      }
+    }
+  },
+  {
+    "id": "supabase-dev",
+    "name": "Supabase DEV (uqoukptnttppuwtqdvhd)",
+    "enabled": true,
+    "priority": 90,
+    "target": {
+      "host": "supabase.com",
+      "urlPattern": "https://supabase.com/dashboard/project/uqoukptnttppuwtqdvhd*"
+    },
+    "detection": {
+      "mode": "urlOnly"
+    },
+    "display": {
+      "labelTemplate": "DEV Supabase",
+      "color": "#34c759",
+      "position": "topRight",
+      "opacity": 0.9
+    }
+  }
+]
