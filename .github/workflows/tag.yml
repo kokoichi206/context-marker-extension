@@ -9,10 +9,13 @@ permissions:
 jobs:
   tag:
     runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.create.outputs.tag }}
     steps:
       - uses: actions/checkout@v4
 
       - name: Create and push tag
+        id: create
         run: |
           VERSION=$(jq -r .version package.json)
           TAG="v${VERSION}"
@@ -22,4 +25,11 @@ jobs:
           fi
           git tag "$TAG"
           git push origin "$TAG"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "Created and pushed tag $TAG"
+
+  release:
+    needs: tag
+    uses: ./.github/workflows/release.yml
+    with:
+      tag: ${{ needs.tag.outputs.tag }}
