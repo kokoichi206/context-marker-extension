@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy - Context Marker</title>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; max-width: 720px; margin: 0 auto; padding: 24px; color: #333; line-height: 1.7; }
+    h1 { font-size: 24px; margin-bottom: 8px; }
+    h2 { font-size: 18px; margin-top: 32px; }
+    .updated { color: #666; font-size: 14px; margin-bottom: 32px; }
+  </style>
+</head>
+<body>
+  <h1>Privacy Policy</h1>
+  <p class="updated">Last updated: February 9, 2026</p>
+
+  <h2>Overview</h2>
+  <p>Context Marker is a Chrome extension that visually marks browser tabs based on user-defined rules to help distinguish between environments (e.g., production, staging, development).</p>
+
+  <h2>Data Collection</h2>
+  <p>Context Marker does <strong>not</strong> collect, transmit, or share any personal data. All processing happens locally in your browser.</p>
+
+  <h2>Data Storage</h2>
+  <p>The extension stores the following data locally using Chrome's <code>storage.local</code> API:</p>
+  <ul>
+    <li><strong>Rules</strong>: User-defined rules for environment detection (host patterns, extractors, display settings).</li>
+    <li><strong>Display style preference</strong>: The selected overlay display style (top bar, ribbon, or combo).</li>
+  </ul>
+  <p>This data never leaves your browser and is not sent to any external server.</p>
+
+  <h2>Page Content Access</h2>
+  <p>The extension reads page content (DOM text, meta tags, page title) solely to evaluate user-defined detection rules. This information is processed in memory, is not stored persistently, and is not transmitted anywhere.</p>
+
+  <h2>Permissions</h2>
+  <ul>
+    <li><strong><code>&lt;all_urls&gt;</code></strong>: Required to run detection rules on any website the user configures. No data is collected from these pages.</li>
+    <li><strong><code>storage</code></strong>: Used to persist user rules and preferences locally.</li>
+  </ul>
+
+  <h2>Third-Party Services</h2>
+  <p>Context Marker does not use any third-party services, analytics, or tracking.</p>
+
+  <h2>Changes to This Policy</h2>
+  <p>Any changes to this privacy policy will be reflected on this page with an updated date.</p>
+
+  <h2>Contact</h2>
+  <p>For questions about this privacy policy, please open an issue on the <a href="https://github.com/kokoichi206/context-marker-extension">GitHub repository</a>.</p>
+</body>
+</html>
