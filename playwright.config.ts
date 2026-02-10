@@ -9,9 +9,10 @@ export default defineConfig({
   reporter: "list",
   use: {
     baseURL: "http://localhost:5678",
+    trace: "retain-on-failure",
   },
   webServer: {
-    command: "npx serve e2e/pages -p 5678 --no-clipboard",
+    command: "pnpm exec serve e2e/pages -p 5678 --no-clipboard",
     port: 5678,
     reuseExistingServer: !process.env.CI,
   },

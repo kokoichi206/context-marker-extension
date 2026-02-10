@@ -16,6 +16,19 @@ type ExtensionFixtures = {
   seedDisplayStyle: (style: DisplayStyle) => Promise<void>;
 };
 
+async function getExtensionWorker(context: BrowserContext) {
+  const isExtensionSW = (w: { url(): string }) =>
+    w.url().startsWith("chrome-extension://");
+
+  const existing = context.serviceWorkers().find(isExtensionSW);
+  if (existing) return existing;
+
+  return context.waitForEvent("serviceworker", {
+    predicate: isExtensionSW,
+    timeout: 5000,
+  });
+}
+
 export const test = base.extend<ExtensionFixtures>({
   // eslint-disable-next-line no-empty-pattern
   context: async ({}, use) => {
@@ -26,6 +39,8 @@ export const test = base.extend<ExtensionFixtures>({
       "--no-first-run",
       "--disable-gpu",
     ];
+    // Playwright's built-in headless mode does not support extensions.
+    // Use headless:false with Chrome's --headless=new flag instead.
     if (!headed) {
       args.push("--headless=new");
     }
@@ -38,20 +53,14 @@ export const test = base.extend<ExtensionFixtures>({
   },
 
   extensionId: async ({ context }, use) => {
-    let sw = context.serviceWorkers()[0];
-    if (!sw) {
-      sw = await context.waitForEvent("serviceworker");
-    }
+    const sw = await getExtensionWorker(context);
     const extensionId = sw.url().split("/")[2];
     await use(extensionId);
   },
 
   seedRules: async ({ context }, use) => {
     const seed = async (rules: Rule[]) => {
-      let sw = context.serviceWorkers()[0];
-      if (!sw) {
-        sw = await context.waitForEvent("serviceworker");
-      }
+      const sw = await getExtensionWorker(context);
       await sw.evaluate(
         (r: unknown) => chrome.storage.local.set({ rules: r }),
         rules,
@@ -62,10 +71,7 @@ export const test = base.extend<ExtensionFixtures>({
 
   seedDisplayStyle: async ({ context }, use) => {
     const seed = async (style: DisplayStyle) => {
-      let sw = context.serviceWorkers()[0];
-      if (!sw) {
-        sw = await context.waitForEvent("serviceworker");
-      }
+      const sw = await getExtensionWorker(context);
       await sw.evaluate(
         (s: string) => chrome.storage.local.set({ displayStyle: s }),
         style,
