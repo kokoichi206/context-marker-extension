@@ -57,3 +57,11 @@ jobs:
           tag_name: ${{ inputs.tag || github.ref_name }}
           generate_release_notes: true
           files: context-marker-${{ inputs.tag || github.ref_name }}.zip
+
+      - name: Publish to Chrome Web Store
+        uses: kokoichi206/chrome-webstore-publish@v0.1.1
+        with:
+          service-account-key-json: ${{ secrets.GOOGLE_SA_KEY_JSON }}
+          extension-id: ohjfjpalpgklagfohdlcdmadajcbbnpd
+          publisher-id: ${{ secrets.CWS_PUBLISHER_ID }}
+          zip-path: context-marker-${{ inputs.tag || github.ref_name }}.zip
