@@ -34,7 +34,7 @@ function ensureState(): OverlayState {
 
   const host = document.createElement("div");
   host.id = "context-marker-root";
-  const shadow = host.attachShadow({ mode: "closed" });
+  const shadow = host.attachShadow({ mode: "open" });
 
   const styleEl = document.createElement("style");
   const container = document.createElement("div");
